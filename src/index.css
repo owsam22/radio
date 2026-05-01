@@ -91,6 +91,11 @@ body {
   animation: knob-pulse 2s ease-in-out infinite;
 }
 
+@keyframes waveform {
+  from { transform: scaleY(0.3); opacity: 0.6; }
+  to   { transform: scaleY(1);   opacity: 1; }
+}
+
 /* Retro Utilities */
 .paper-texture {
   position: relative;

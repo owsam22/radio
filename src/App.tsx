@@ -181,24 +181,26 @@ export default function App() {
         <div className="max-w-4xl mx-auto px-4 sm:px-8 py-6 sm:py-8">
 
           {/* Search Bar (always visible above stations) */}
-          <div className="mb-6">
-            <div className="relative flex items-center group">
-              <svg className="absolute left-4 w-4 h-4 text-text-dim/50 group-focus-within:text-accent transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
+          <div className="mb-10 sm:mb-20 px-1 sm:px-0">
+            <div className="relative flex items-center group w-full max-w-4xl mx-auto transform transition-all duration-500 hover:-translate-y-1">
+              <div className="absolute left-5 sm:left-8 pointer-events-none text-accent/40 group-focus-within:text-accent group-focus-within:scale-110 transition-all duration-500">
+                <svg className="w-5 h-5 sm:w-8 sm:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => handleSearch(e.target.value)}
-                placeholder="Search stations, genres, countries..."
-                className="w-full bg-[#F8F9FA] border border-border/60 rounded-2xl pl-11 pr-10 py-3.5 text-sm text-text-primary placeholder:text-text-dim/40 outline-none focus:border-accent/50 focus:bg-white focus:ring-2 focus:ring-accent/10 transition-all shadow-sm"
+                placeholder="Search stations, genres..."
+                className="w-full bg-white border-2 border-border/30 rounded-[1.25rem] sm:rounded-[2.5rem] pl-14 sm:pl-24 pr-12 sm:pr-20 py-4.5 sm:py-8 text-base sm:text-2xl font-semibold text-text-primary placeholder:text-text-dim/20 outline-none transition-all duration-500 shadow-[0_20px_60px_-15px_rgba(79,70,229,0.12)] group-hover:shadow-[0_30px_80px_-15px_rgba(79,70,229,0.2)] focus:border-accent/50 focus:ring-[10px] focus:ring-accent/5"
               />
               {searchQuery && (
                 <button
                   onClick={() => handleSearch("")}
-                  className="absolute right-4 text-text-dim/40 hover:text-danger transition-colors"
+                  className="absolute right-4 sm:right-7 w-8 h-8 sm:w-14 sm:h-14 rounded-full bg-surface-light flex items-center justify-center text-text-dim/40 hover:text-danger transition-all duration-300"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-4 h-4 sm:w-8 sm:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
@@ -208,22 +210,27 @@ export default function App() {
 
           {/* Hero Banner */}
           {view === "home" && !searchQuery && !activeCategory && (
-            <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden mb-8 group cursor-pointer aspect-[16/7]">
+            <div className="relative rounded-[2.5rem] sm:rounded-[3rem] overflow-hidden mb-12 sm:mb-16 group cursor-pointer aspect-[16/10] sm:aspect-[21/8]">
               <img
                 src="https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&q=80&w=2070"
                 alt="Featured stations"
-                className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
               />
-              <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/30 to-transparent" />
-              <div className="relative h-full flex flex-col justify-center px-6 sm:px-10 gap-2 sm:gap-3">
-                <span className="text-[9px] font-bold text-accent-secondary uppercase tracking-[0.4em]">Featured Collection</span>
-                <h2 className="font-heading text-2xl sm:text-4xl font-bold text-white tracking-tight leading-tight">Browse top Indian stations</h2>
-                <button
-                  onClick={() => document.getElementById("station-grid")?.scrollIntoView({ behavior: "smooth" })}
-                  className="w-fit bg-accent text-white px-5 sm:px-7 py-2 sm:py-2.5 rounded-full text-sm font-bold shadow-lg hover:bg-accent-dim transition-all mt-1"
-                >
-                  View Stations
-                </button>
+              <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] group-hover:backdrop-blur-0 transition-all duration-1000" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+              <div className="relative h-full flex flex-col items-center justify-center text-center px-6 sm:px-12 gap-4 sm:gap-6">
+                <span className="text-[11px] sm:text-[12px] font-bold text-accent-secondary uppercase tracking-[0.6em] drop-shadow-lg">Featured Collection</span>
+                <h2 className="font-heading text-4xl sm:text-6xl font-bold text-white tracking-tight leading-tight drop-shadow-2xl max-w-4xl">
+                  Browse top Indian stations
+                </h2>
+                <div className="pt-2 sm:pt-4">
+                  <button
+                    onClick={() => document.getElementById("station-grid")?.scrollIntoView({ behavior: 'smooth' })}
+                    className="bg-white text-accent px-10 sm:px-14 py-4 sm:py-5 rounded-full text-base sm:text-lg font-black shadow-[0_20px_50px_rgba(0,0,0,0.3)] hover:bg-accent hover:text-white hover:scale-105 active:scale-95 transition-all duration-500"
+                  >
+                    View Stations
+                  </button>
+                </div>
               </div>
             </div>
           )}
@@ -369,42 +376,46 @@ export default function App() {
         </div>
       )}
 
-      {/* ── Mobile Mini Player (tap to expand) ── */}
+      {/* ── Mobile Mini Player Bar ── */}
       {player.currentStation && !mobilePlayerOpen && (
-        <div className="lg:hidden fixed bottom-16 left-3 right-3 z-40">
+        <div 
+          className="lg:hidden fixed bottom-16 left-0 right-0 z-40 animate-fade-in-up"
+          style={{ animationDuration: '0.4s' }}
+        >
           <div
-            className="bg-white border border-border/40 rounded-2xl px-4 py-3 shadow-2xl flex items-center gap-3 cursor-pointer"
+            className="bg-white/95 backdrop-blur-xl border-t border-border/30 px-4 py-2.5 flex items-center gap-3 shadow-[0_-10px_30px_rgba(0,0,0,0.08)] cursor-pointer"
             onClick={() => setMobilePlayerOpen(true)}
           >
-            <div className="w-11 h-11 rounded-xl overflow-hidden shadow-sm flex-shrink-0">
+            <div className="w-10 h-10 rounded-lg overflow-hidden shadow-md flex-shrink-0 relative">
               <img
-                src={player.currentStation.favicon || `https://ui-avatars.com/api/?name=${encodeURIComponent(player.currentStation.name)}&background=8B5E3C&color=fff&size=128`}
+                src={player.currentStation.favicon || `https://ui-avatars.com/api/?name=${encodeURIComponent(player.currentStation.name)}&background=4F46E5&color=fff&size=128`}
                 alt=""
                 className="w-full h-full object-cover"
-                onError={(e) => { (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(player.currentStation!.name)}&background=8B5E3C&color=fff&size=128`; }}
+                onError={(e) => { (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(player.currentStation!.name)}&background=4F46E5&color=fff&size=128`; }}
               />
+              {player.isPlaying && (
+                <div className="absolute inset-0 bg-accent/20 flex items-center justify-center">
+                   <div className="flex gap-[2px] h-3 items-end">
+                      {[0.4, 0.9, 0.5, 1].map((h, i) => (
+                        <div key={i} className="w-[2px] bg-white rounded-full animate-[waveform_0.6s_ease-in-out_infinite_alternate]" style={{ height: `${h*100}%`, animationDelay: `${i*0.1}s` }} />
+                      ))}
+                   </div>
+                </div>
+              )}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-bold text-text-primary truncate">{player.currentStation.name}</p>
-              <p className="text-[10px] text-text-dim/50 truncate">{player.currentStation.country || "Global"} · {player.isPlaying ? "Live" : "Paused"}</p>
+              <p className="text-xs font-black text-text-primary truncate uppercase tracking-tight">{player.currentStation.name}</p>
+              <p className="text-[10px] font-bold text-accent truncate uppercase tracking-widest">{player.isPlaying ? "Live Now" : "Paused"}</p>
             </div>
-            <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
               <button
                 onClick={player.togglePlayPause}
-                className="w-9 h-9 rounded-full bg-accent/10 text-accent flex items-center justify-center"
+                className="w-10 h-10 rounded-full bg-accent text-white flex items-center justify-center shadow-lg shadow-accent/20"
               >
                 {player.isPlaying
-                  ? <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" /></svg>
-                  : <svg className="w-4 h-4 ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+                  ? <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" /></svg>
+                  : <svg className="w-5 h-5 ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
                 }
-              </button>
-              <button
-                onClick={player.stop}
-                className="w-9 h-9 rounded-full text-text-dim/50 hover:text-danger flex items-center justify-center"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
-                </svg>
               </button>
             </div>
           </div>
