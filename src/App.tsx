@@ -20,19 +20,18 @@ export default function App() {
   const [stations, setStations] = useState<Station[]>([]);
   const [isFetching, setIsFetching] = useState(true);
   const [fetchError, setFetchError] = useState<string | null>(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [mobilePlayerOpen, setMobilePlayerOpen] = useState(false);
 
   const player = usePlayer();
   const { favorites, isFavorite, toggleFavorite } = useFavorites();
   const { recents, addRecent } = useRecentlyPlayed();
 
-  // Fetch stations based on context
   const fetchStations = useCallback(async () => {
     setIsFetching(true);
     setFetchError(null);
-
     try {
       let results: Station[];
-
       if (searchQuery.trim()) {
         results = await searchIndianStations(searchQuery.trim());
       } else if (activeCategory) {
@@ -40,92 +39,132 @@ export default function App() {
       } else {
         results = await fetchIndianStations();
       }
-
-      // Dedupe by uuid
       const seen = new Set<string>();
       const unique = results.filter((s) => {
         if (seen.has(s.stationuuid)) return false;
         seen.add(s.stationuuid);
         return true;
       });
-
       setStations(unique);
     } catch {
-      setFetchError("Failed to load stations. Please try again.");
+      setFetchError("Failed to load stations. Check your connection and try again.");
       setStations([]);
     } finally {
       setIsFetching(false);
     }
   }, [searchQuery, activeCategory]);
 
-  useEffect(() => {
-    fetchStations();
-  }, [fetchStations]);
+  useEffect(() => { fetchStations(); }, [fetchStations]);
 
   const handleSearch = useCallback((query: string) => {
     setSearchQuery(query);
-    if (query.trim()) {
-      setActiveCategory("");
-    }
+    if (query.trim()) setActiveCategory("");
   }, []);
 
   const handleSelectCategory = useCallback((tag: string) => {
     setActiveCategory((prev) => (prev === tag ? "" : tag));
     setSearchQuery("");
     setView("home");
+    setSidebarOpen(false);
   }, []);
 
   const handleShowFavorites = useCallback(() => {
     setView("favorites");
     setActiveCategory("");
     setSearchQuery("");
+    setSidebarOpen(false);
   }, []);
 
   const handleShowHome = useCallback(() => {
     setView("home");
     setActiveCategory("");
     setSearchQuery("");
+    setSidebarOpen(false);
   }, []);
 
-  const handlePlay = useCallback(
-    (station: Station) => {
-      player.playStation(station);
-      addRecent(station);
-    },
-    [player, addRecent]
-  );
+  const handlePlay = useCallback((station: Station) => {
+    player.playStation(station);
+    addRecent(station);
+  }, [player, addRecent]);
 
-  // Determine displayed stations
   const displayedStations = useMemo(() => {
     if (view === "favorites") return favorites;
     return stations;
   }, [view, favorites, stations]);
 
-  // Page title
   const pageTitle = useMemo(() => {
     if (view === "favorites") return "Your Favorites";
-    if (searchQuery) return `Search: "${searchQuery}"`;
+    if (searchQuery) return `Results for "${searchQuery}"`;
     if (activeCategory) return activeCategory.charAt(0).toUpperCase() + activeCategory.slice(1);
     return "Popular Indian Stations";
   }, [view, searchQuery, activeCategory]);
 
   return (
     <div className="flex h-screen bg-[#F8F9FA] overflow-hidden text-[#1A1A1A] flex-col lg:flex-row">
-      {/* Mobile Top Header */}
-      <div className="lg:hidden flex items-center justify-between px-6 py-4 bg-white border-b border-border/40 z-30">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center shadow-lg shadow-accent/20">
-            <span className="font-heading text-bg text-sm font-bold">S</span>
-          </div>
-          <h1 className="font-heading text-lg font-bold text-text-primary tracking-tight">Swar Luxe</h1>
-        </div>
-        <button onClick={handleShowFavorites} className="p-2 rounded-full hover:bg-surface-light text-text-dim relative">
-           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>
-           {favorites.length > 0 && <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-accent border-2 border-white rounded-full" />}
-        </button>
-      </div>
 
-      {/* Left Sidebar (Desktop) */}
+      {/* ── Mobile Top Header ── */}
+      <header className="lg:hidden flex items-center justify-between px-4 py-3 bg-white border-b border-border/30 z-30 flex-shrink-0 shadow-sm">
+        <button
+          onClick={() => setSidebarOpen(true)}
+          className="w-9 h-9 rounded-xl flex items-center justify-center bg-[#F5F5F5] text-text-dim hover:text-accent transition-colors"
+          aria-label="Open menu"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+        <div className="flex items-center gap-2.5">
+          <div className="w-7 h-7 rounded-lg bg-accent flex items-center justify-center shadow-md">
+            <svg className="w-[15px] h-[15px] text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+            </svg>
+          </div>
+          <h1 className="font-heading text-base font-bold text-text-primary">EasyRadio</h1>
+        </div>
+        <button
+          onClick={handleShowFavorites}
+          className="p-2 rounded-xl hover:bg-surface-light text-text-dim relative transition-colors"
+          aria-label="Favorites"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+          </svg>
+          {favorites.length > 0 && (
+            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-accent rounded-full border border-white" />
+          )}
+        </button>
+      </header>
+
+      {/* ── Mobile Sidebar Drawer ── */}
+      {sidebarOpen && (
+        <div
+          className="lg:hidden fixed inset-0 z-50 flex"
+          onClick={() => setSidebarOpen(false)}
+        >
+          {/* Backdrop */}
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
+          {/* Drawer */}
+          <div
+            className="relative w-72 h-full bg-white shadow-2xl overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Sidebar
+              activeCategory={activeCategory}
+              onSelectCategory={handleSelectCategory}
+              favoritesCount={favorites.length}
+              onShowFavorites={handleShowFavorites}
+              onShowHome={handleShowHome}
+              currentView={view}
+              onSearch={handleSearch}
+              searchQuery={searchQuery}
+              onClose={() => setSidebarOpen(false)}
+              isMobile
+            />
+          </div>
+        </div>
+      )}
+
+      {/* ── Desktop Left Sidebar ── */}
       <Sidebar
         activeCategory={activeCategory}
         onSelectCategory={handleSelectCategory}
@@ -137,109 +176,152 @@ export default function App() {
         searchQuery={searchQuery}
       />
 
-      {/* Main Content Area */}
-      <main className="flex-1 flex flex-col min-w-0 bg-white shadow-[0_0_40px_rgba(0,0,0,0.03)] z-10 relative overflow-y-auto custom-scrollbar pb-32 lg:pb-0">
-        <div className="max-w-5xl mx-auto w-full px-6 sm:px-8 py-6 sm:py-10">
-          {/* Mobile Search Bar (desktop search is in sidebar) */}
-          <div className="lg:hidden mb-6">
+      {/* ── Main Content ── */}
+      <main className="flex-1 min-w-0 bg-white overflow-y-auto pb-28 lg:pb-0 relative">
+        <div className="max-w-4xl mx-auto px-4 sm:px-8 py-6 sm:py-8">
+
+          {/* Search Bar (always visible above stations) */}
+          <div className="mb-6">
             <div className="relative flex items-center group">
-              <svg className="absolute left-3.5 w-4 h-4 text-text-dim/50 group-focus-within:text-accent transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="absolute left-4 w-4 h-4 text-text-dim/50 group-focus-within:text-accent transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => handleSearch(e.target.value)}
-                placeholder="Search stations..."
-                className="w-full bg-surface-light border border-border/50 rounded-xl pl-10 pr-9 py-3 text-sm text-text-primary placeholder:text-text-dim/40 outline-none focus:border-accent/40 focus:ring-2 focus:ring-accent/10 transition-all"
+                placeholder="Search stations, genres, countries..."
+                className="w-full bg-[#F8F9FA] border border-border/60 rounded-2xl pl-11 pr-10 py-3.5 text-sm text-text-primary placeholder:text-text-dim/40 outline-none focus:border-accent/50 focus:bg-white focus:ring-2 focus:ring-accent/10 transition-all shadow-sm"
               />
               {searchQuery && (
-                <button onClick={() => handleSearch('')} className="absolute right-3 text-text-dim/50 hover:text-danger transition-colors">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
+                <button
+                  onClick={() => handleSearch("")}
+                  className="absolute right-4 text-text-dim/40 hover:text-danger transition-colors"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
                 </button>
               )}
             </div>
           </div>
 
-          {/* Hero Section */}
+          {/* Hero Banner */}
           {view === "home" && !searchQuery && !activeCategory && (
-            <div className="relative rounded-3xl sm:rounded-[2.5rem] overflow-hidden mb-8 sm:mb-12 group cursor-pointer aspect-[16/9] sm:aspect-[21/9]">
-               <img 
-                 src="https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&q=80&w=2070" 
-                 alt="Featured" 
-                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-               />
-               <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/30 to-transparent" />
-               <div className="relative h-full flex flex-col justify-center px-8 sm:px-12 space-y-2 sm:space-y-4">
-                  <span className="text-[9px] sm:text-[10px] font-bold text-accent-secondary uppercase tracking-[0.4em]">Featured Collection</span>
-                  <h2 className="font-heading text-3xl sm:text-5xl font-bold text-white tracking-tight leading-tight">Browse top Indian stations</h2>
-                  <div className="flex items-center gap-4 sm:gap-6 pt-2 sm:pt-4">
-                    <button 
-                      onClick={() => document.getElementById('station-grid')?.scrollIntoView({ behavior: 'smooth' })}
-                      className="bg-accent text-bg px-6 sm:px-8 py-2.5 sm:py-3 rounded-full text-sm sm:text-base font-bold shadow-lg hover:bg-accent-dim transition-all"
-                    >
-                      View Stations
-                    </button>
-                    <p className="hidden sm:block text-white/60 text-xs italic">Curated by our broadcast experts</p>
-                  </div>
-               </div>
+            <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden mb-8 group cursor-pointer aspect-[16/7]">
+              <img
+                src="https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&q=80&w=2070"
+                alt="Featured stations"
+                className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/30 to-transparent" />
+              <div className="relative h-full flex flex-col justify-center px-6 sm:px-10 gap-2 sm:gap-3">
+                <span className="text-[9px] font-bold text-accent-secondary uppercase tracking-[0.4em]">Featured Collection</span>
+                <h2 className="font-heading text-2xl sm:text-4xl font-bold text-white tracking-tight leading-tight">Browse top Indian stations</h2>
+                <button
+                  onClick={() => document.getElementById("station-grid")?.scrollIntoView({ behavior: "smooth" })}
+                  className="w-fit bg-accent text-white px-5 sm:px-7 py-2 sm:py-2.5 rounded-full text-sm font-bold shadow-lg hover:bg-accent-dim transition-all mt-1"
+                >
+                  View Stations
+                </button>
+              </div>
             </div>
           )}
 
-          {/* Header Title */}
-          <div id="station-grid" className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
-            <h2 className="font-heading text-2xl sm:text-3xl font-bold text-text-primary tracking-tight">
+          {/* Section Header */}
+          <div id="station-grid" className="flex items-center justify-between mb-5">
+            <h2 className="font-heading text-xl sm:text-2xl font-bold text-text-primary tracking-tight">
               {pageTitle}
             </h2>
-            <div className="flex gap-2 w-full sm:w-auto overflow-x-auto pb-2 sm:pb-0 scrollbar-hide">
-               <button className="whitespace-nowrap px-4 py-1.5 rounded-full text-[10px] sm:text-xs font-bold bg-surface-light text-text-muted hover:bg-accent/10 hover:text-accent transition-all">Featured</button>
-               <button className="whitespace-nowrap px-4 py-1.5 rounded-full text-[10px] sm:text-xs font-bold bg-surface-light text-text-muted hover:bg-accent/10 hover:text-accent transition-all">Top Click</button>
-               <button className="whitespace-nowrap px-4 py-1.5 rounded-full text-[10px] sm:text-xs font-bold bg-surface-light text-text-muted hover:bg-accent/10 hover:text-accent transition-all">Highest Voted</button>
-            </div>
+            {!isFetching && !fetchError && (
+              <span className="text-xs text-text-dim/50 font-medium">
+                {displayedStations.length} stations
+              </span>
+            )}
           </div>
 
-          {/* Grid Layout */}
-          <div className="mt-4 sm:mt-8">
-            {isFetching ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+          {/* Error State */}
+          {fetchError && (
+            <div className="flex flex-col items-center justify-center py-16 text-center bg-danger/5 rounded-2xl border border-danger/20 mb-6">
+              <svg className="w-10 h-10 text-danger/40 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              <p className="text-sm font-bold text-danger/70 mb-1">Connection Error</p>
+              <p className="text-xs text-text-muted mb-5">{fetchError}</p>
+              <button
+                onClick={fetchStations}
+                className="px-6 py-2.5 bg-accent text-white rounded-full text-sm font-bold hover:bg-accent-dim transition-all shadow-sm"
+              >
+                Try Again
+              </button>
+            </div>
+          )}
+
+          {/* Station Grid */}
+          {!fetchError && (
+            isFetching ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">
                 {[...Array(9)].map((_, i) => (
-                  <div key={i} className="h-20 bg-surface-light rounded-2xl animate-pulse" />
+                  <div key={i} className="h-[72px] bg-[#F8F9FA] rounded-2xl animate-pulse" />
                 ))}
               </div>
             ) : displayedStations.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-20 sm:py-32 text-center">
-                <div className="w-16 h-16 rounded-full bg-surface-light flex items-center justify-center mb-6 text-text-dim/20">
-                   <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+              <div className="flex flex-col items-center justify-center py-24 text-center">
+                <div className="w-14 h-14 rounded-full bg-[#F8F9FA] flex items-center justify-center mb-4">
+                  <svg className="w-7 h-7 text-text-dim/25" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
                 </div>
-                <h3 className="text-xl font-bold text-text-primary">No signal detected</h3>
-                <p className="text-sm text-text-muted mt-2 mb-8">Try adjusting your search or browse categories.</p>
-                <button 
+                <h3 className="text-base font-bold text-text-primary mb-1">No stations found</h3>
+                <p className="text-sm text-text-muted mb-6">Try a different search or browse genres.</p>
+                <button
                   onClick={handleShowHome}
-                  className="px-8 py-3 bg-accent/10 text-accent rounded-full text-sm font-bold hover:bg-accent hover:text-bg transition-all"
+                  className="px-6 py-2.5 bg-accent/10 text-accent rounded-full text-sm font-bold hover:bg-accent hover:text-white transition-all"
                 >
-                  Return to Home
+                  Back to Home
                 </button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-6 gap-y-4 pb-12 sm:pb-20">
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 pb-4">
                 {displayedStations.map((station) => (
-                  <div key={station.stationuuid}>
-                    <StationCard
-                      station={station}
-                      isPlaying={player.currentStation?.stationuuid === station.stationuuid && player.isPlaying}
-                      isFavorite={isFavorite(station.stationuuid)}
-                      onPlay={handlePlay}
-                      onToggleFavorite={toggleFavorite}
-                    />
-                  </div>
+                  <StationCard
+                    key={station.stationuuid}
+                    station={station}
+                    isPlaying={player.currentStation?.stationuuid === station.stationuuid && player.isPlaying}
+                    isFavorite={isFavorite(station.stationuuid)}
+                    onPlay={handlePlay}
+                    onToggleFavorite={toggleFavorite}
+                  />
                 ))}
               </div>
-            )}
-          </div>
+            )
+          )}
+
+          {/* Recently Played */}
+          {!isFetching && !fetchError && view === "home" && !searchQuery && !activeCategory && recents.length > 0 && (
+            <div className="mt-10 pb-4">
+              <div className="flex items-center gap-3 mb-4">
+                <h3 className="font-heading text-lg font-bold text-text-primary">Recently Played</h3>
+                <div className="flex-1 h-px bg-border/40" />
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">
+                {recents.slice(0, 6).map((station) => (
+                  <StationCard
+                    key={`recent-${station.stationuuid}`}
+                    station={station}
+                    isPlaying={player.currentStation?.stationuuid === station.stationuuid && player.isPlaying}
+                    isFavorite={isFavorite(station.stationuuid)}
+                    onPlay={handlePlay}
+                    onToggleFavorite={toggleFavorite}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </main>
 
-      {/* Right Sidebar - Now Playing (Desktop) */}
+      {/* ── Desktop Right Player ── */}
       <Player
         currentStation={player.currentStation}
         isPlaying={player.isPlaying}
@@ -253,58 +335,110 @@ export default function App() {
         onToggleFavorite={() => player.currentStation && toggleFavorite(player.currentStation)}
       />
 
-      {/* Mobile Mini Player */}
-      {player.currentStation && (
-        <div className="lg:hidden fixed bottom-16 left-0 right-0 z-40 px-4 pb-4">
-          <div className="bg-white/95 backdrop-blur-xl border border-border/40 rounded-2xl p-3 shadow-2xl flex items-center gap-4 animate-fade-in-up">
-            <div className="w-12 h-12 rounded-xl overflow-hidden shadow-sm flex-shrink-0">
-               <img 
-                 src={player.currentStation.favicon || `https://ui-avatars.com/api/?name=${encodeURIComponent(player.currentStation.name)}&background=random&color=fff&size=128`}
-                 alt=""
-                 className="w-full h-full object-cover"
-               />
+      {/* ── Mobile Fullscreen Player ── */}
+      {mobilePlayerOpen && (
+        <div className="lg:hidden fixed inset-0 z-50 bg-white flex flex-col">
+          {/* Close bar */}
+          <div className="flex items-center justify-between px-5 py-4 border-b border-border/40">
+            <span className="text-xs font-bold text-text-dim/50 uppercase tracking-widest">Now Playing</span>
+            <button
+              onClick={() => setMobilePlayerOpen(false)}
+              className="w-8 h-8 rounded-full bg-[#F8F9FA] flex items-center justify-center text-text-dim"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          {/* Inline player content */}
+          <div className="flex-1 overflow-y-auto">
+            <Player
+              currentStation={player.currentStation}
+              isPlaying={player.isPlaying}
+              volume={player.volume}
+              isLoading={player.isLoading}
+              hasError={player.hasError}
+              onVolumeChange={player.setVolume}
+              onTogglePlayPause={player.togglePlayPause}
+              onStop={() => { player.stop(); setMobilePlayerOpen(false); }}
+              isFavorite={player.currentStation ? isFavorite(player.currentStation.stationuuid) : false}
+              onToggleFavorite={() => player.currentStation && toggleFavorite(player.currentStation)}
+              mobileFullscreen
+            />
+          </div>
+        </div>
+      )}
+
+      {/* ── Mobile Mini Player (tap to expand) ── */}
+      {player.currentStation && !mobilePlayerOpen && (
+        <div className="lg:hidden fixed bottom-16 left-3 right-3 z-40">
+          <div
+            className="bg-white border border-border/40 rounded-2xl px-4 py-3 shadow-2xl flex items-center gap-3 cursor-pointer"
+            onClick={() => setMobilePlayerOpen(true)}
+          >
+            <div className="w-11 h-11 rounded-xl overflow-hidden shadow-sm flex-shrink-0">
+              <img
+                src={player.currentStation.favicon || `https://ui-avatars.com/api/?name=${encodeURIComponent(player.currentStation.name)}&background=8B5E3C&color=fff&size=128`}
+                alt=""
+                className="w-full h-full object-cover"
+                onError={(e) => { (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(player.currentStation!.name)}&background=8B5E3C&color=fff&size=128`; }}
+              />
             </div>
             <div className="flex-1 min-w-0">
-               <h4 className="text-xs font-bold text-text-primary truncate">{player.currentStation.name}</h4>
-               <p className="text-[10px] text-text-dim/60 truncate uppercase tracking-widest">{player.currentStation.country || "Global"}</p>
+              <p className="text-xs font-bold text-text-primary truncate">{player.currentStation.name}</p>
+              <p className="text-[10px] text-text-dim/50 truncate">{player.currentStation.country || "Global"} · {player.isPlaying ? "Live" : "Paused"}</p>
             </div>
-            <div className="flex items-center gap-2">
-               <button 
-                 onClick={player.togglePlayPause}
-                 className="w-10 h-10 rounded-full bg-accent/5 text-accent flex items-center justify-center"
-               >
-                  {player.isPlaying ? (
-                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
-                  ) : (
-                    <svg className="w-5 h-5 ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                  )}
-               </button>
-               <button 
-                 onClick={player.stop}
-                 className="w-10 h-10 rounded-full hover:bg-danger/5 text-text-dim hover:text-danger flex items-center justify-center transition-colors"
-               >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
-               </button>
+            <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+              <button
+                onClick={player.togglePlayPause}
+                className="w-9 h-9 rounded-full bg-accent/10 text-accent flex items-center justify-center"
+              >
+                {player.isPlaying
+                  ? <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" /></svg>
+                  : <svg className="w-4 h-4 ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+                }
+              </button>
+              <button
+                onClick={player.stop}
+                className="w-9 h-9 rounded-full text-text-dim/50 hover:text-danger flex items-center justify-center"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Mobile Bottom Navigation */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-xl border-t border-border/40 flex items-center justify-around py-2 h-16">
+      {/* ── Mobile Bottom Nav ── */}
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-xl border-t border-border/40 flex items-center h-16">
         <button
           onClick={handleShowHome}
-          className={`flex flex-col items-center gap-1 transition-all duration-300 ${view === "home" ? "text-accent" : "text-text-dim"}`}
+          className={`flex-1 flex flex-col items-center gap-0.5 transition-colors ${view === "home" ? "text-accent" : "text-text-dim/50"}`}
         >
-          <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
-          <span className="text-[9px] font-bold uppercase">Home</span>
+          <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+          </svg>
+          <span className="text-[9px] font-bold uppercase tracking-wide">Home</span>
         </button>
         <button
           onClick={handleShowFavorites}
-          className={`flex flex-col items-center gap-1 transition-all duration-300 ${view === "favorites" ? "text-accent" : "text-text-dim"}`}
+          className={`flex-1 flex flex-col items-center gap-0.5 transition-colors ${view === "favorites" ? "text-accent" : "text-text-dim/50"}`}
         >
-          <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>
-          <span className="text-[9px] font-bold uppercase">Saved</span>
+          <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+          </svg>
+          <span className="text-[9px] font-bold uppercase tracking-wide">Saved</span>
+        </button>
+        <button
+          onClick={() => setSidebarOpen(true)}
+          className="flex-1 flex flex-col items-center gap-0.5 text-text-dim/50"
+        >
+          <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+          <span className="text-[9px] font-bold uppercase tracking-wide">Menu</span>
         </button>
       </nav>
     </div>

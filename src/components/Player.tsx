@@ -221,7 +221,7 @@ export default function Player({
 
         {/* Footer */}
         <div className="mt-auto pt-6 border-t border-border/40 text-center">
-          <p className="text-[9px] text-text-dim/25 uppercase tracking-widest font-bold">Swar Luxe Radio · 2026</p>
+          <p className="text-[9px] text-text-dim/25 uppercase tracking-widest font-bold">EasyRadio · 2026</p>
         </div>
       </div>
     </aside>
