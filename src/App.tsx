@@ -103,36 +103,15 @@ export default function App() {
     <div className="flex h-screen bg-[#F8F9FA] overflow-hidden text-[#1A1A1A] flex-col lg:flex-row">
 
       {/* ── Mobile Top Header ── */}
-      <header className="lg:hidden flex items-center justify-between px-4 py-3 bg-white border-b border-border/30 z-30 flex-shrink-0 shadow-sm">
-        <button
-          onClick={() => setSidebarOpen(true)}
-          className="w-9 h-9 rounded-xl flex items-center justify-center bg-[#F5F5F5] text-text-dim hover:text-accent transition-colors"
-          aria-label="Open menu"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
-        </button>
-        <div className="flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-lg bg-accent flex items-center justify-center shadow-md">
-            <svg className="w-[15px] h-[15px] text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <header className="lg:hidden flex items-center justify-center px-4 py-6 bg-white border-b border-border/30 z-30 flex-shrink-0 shadow-sm">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-xl bg-accent flex items-center justify-center shadow-lg shadow-accent/20">
+            <svg className="w-[18px] h-[18px] text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
             </svg>
           </div>
-          <h1 className="font-heading text-base font-bold text-text-primary">EasyRadio</h1>
+          <h1 className="font-heading text-xl font-bold text-text-primary tracking-tight">EasyRadio</h1>
         </div>
-        <button
-          onClick={handleShowFavorites}
-          className="p-2 rounded-xl hover:bg-surface-light text-text-dim relative transition-colors"
-          aria-label="Favorites"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-          </svg>
-          {favorites.length > 0 && (
-            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-accent rounded-full border border-white" />
-          )}
-        </button>
       </header>
 
       {/* ── Mobile Sidebar Drawer ── */}
@@ -193,7 +172,7 @@ export default function App() {
                 value={searchQuery}
                 onChange={(e) => handleSearch(e.target.value)}
                 placeholder="Search stations, genres..."
-                className="w-full bg-white border-2 border-border/30 rounded-[1.25rem] sm:rounded-[2.5rem] pl-14 sm:pl-24 pr-12 sm:pr-20 py-4.5 sm:py-8 text-base sm:text-2xl font-semibold text-text-primary placeholder:text-text-dim/20 outline-none transition-all duration-500 shadow-[0_20px_60px_-15px_rgba(79,70,229,0.12)] group-hover:shadow-[0_30px_80px_-15px_rgba(79,70,229,0.2)] focus:border-accent/50 focus:ring-[10px] focus:ring-accent/5"
+                className="w-full bg-white border-2 border-border/30 rounded-[1.5rem] sm:rounded-[3rem] pl-16 sm:pl-28 pr-12 sm:pr-20 py-5.5 sm:py-9 text-lg sm:text-3xl font-bold text-text-primary placeholder:text-text-dim/20 outline-none transition-all duration-500 shadow-[0_25px_70px_-15px_rgba(79,70,229,0.15)] group-hover:shadow-[0_35px_90px_-15px_rgba(79,70,229,0.25)] focus:border-accent/50 focus:ring-[14px] focus:ring-accent/5"
               />
               {searchQuery && (
                 <button
