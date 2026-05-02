@@ -28,6 +28,11 @@ export async function fetchIndianStations(): Promise<Station[]> {
   return fetchJson<Station[]>(`${BASE_URL}/stations/bycountry/India`);
 }
 
+export async function fetchTopStations(): Promise<Station[]> {
+  return fetchJson<Station[]>(`${BASE_URL}/stations/topvote/100`);
+}
+
+
 export async function searchStations(query: string): Promise<Station[]> {
   return fetchJson<Station[]>(
     `${BASE_URL}/stations/search?name=${encodeURIComponent(query)}&limit=60`
