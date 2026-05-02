@@ -62,3 +62,9 @@ export async function fetchStationsByLanguage(language: string): Promise<Station
     `${BASE_URL}/stations/bylanguage/${encodeURIComponent(language)}?limit=60`
   );
 }
+
+export async function fetchStationByUuid(uuid: string): Promise<Station[]> {
+  return fetchJson<Station[]>(
+    `${BASE_URL}/stations/byuuid/${encodeURIComponent(uuid)}`
+  );
+}

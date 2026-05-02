@@ -12,6 +12,7 @@ import {
   searchIndianStations,
   fetchStationsByTag,
   fetchIndianStationsByTag,
+  fetchStationByUuid,
   type Station,
 } from "./services/radioApi";
 
@@ -130,6 +131,21 @@ export default function App() {
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
   }, [theme]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const stationUuid = params.get("station");
+    if (stationUuid) {
+      fetchStationByUuid(stationUuid)
+        .then((stations) => {
+          if (stations && stations.length > 0) {
+            handlePlay(stations[0]);
+          }
+        })
+        .catch((err) => console.error("Failed to load shared station", err));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div id="body-wrapper" className={sidebarOpen ? "menu-open" : ""}>
