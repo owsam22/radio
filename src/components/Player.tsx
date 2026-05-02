@@ -1,4 +1,3 @@
-import React from "react";
 import type { Station } from "../services/radioApi";
 
 interface PlayerProps {
@@ -14,6 +13,8 @@ interface PlayerProps {
   onToggleFavorite: () => void;
   mobileFullscreen?: boolean;
   onCollapse?: () => void;
+  onNext?: () => void;
+  onPrevious?: () => void;
 }
 
 export default function Player({
@@ -23,11 +24,12 @@ export default function Player({
   isLoading,
   onVolumeChange,
   onTogglePlayPause,
-  onStop,
   isFavorite,
   onToggleFavorite,
   mobileFullscreen = false,
   onCollapse,
+  onNext,
+  onPrevious,
 }: PlayerProps) {
   const isEmpty = !currentStation;
   const genre = currentStation?.tags.split(',')[0] || 'Radio';
@@ -42,8 +44,8 @@ export default function Player({
             onClick={onToggleFavorite}
             title="Add to favourites"
           >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+            <svg viewBox="0 0 24 24" fill={isFavorite ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
             </svg>
           </button>
         )}
@@ -97,7 +99,7 @@ export default function Player({
       </div>
 
       <div className="controls">
-        <button className="ctrl" title="Previous">
+        <button className="ctrl" title="Previous" onClick={onPrevious}>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <polygon points="19 20 9 12 19 4 19 20" /><line x1="5" y1="19" x2="5" y2="5" />
           </svg>
@@ -119,7 +121,7 @@ export default function Player({
             </svg>
           )}
         </button>
-        <button className="ctrl" title="Next">
+        <button className="ctrl" title="Next" onClick={onNext}>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <polygon points="5 4 15 12 5 20 5 4" /><line x1="19" y1="5" x2="19" y2="19" />
           </svg>
