@@ -28,7 +28,7 @@ function SettingsModal({ onClose }: { onClose: () => void }) {
   return (
     <Modal onClose={onClose}>
       <div className="flex items-center justify-between mb-7">
-        <h2 className="font-heading text-xl font-bold">Settings</h2>
+        <h2 className="font-heading text-xl font-bold text-text-primary">Settings</h2>
         <button onClick={onClose} className="w-9 h-9 rounded-full bg-[#F3F4F6] flex items-center justify-center text-text-dim hover:text-danger transition-colors">
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
         </button>
@@ -60,11 +60,11 @@ function AboutModal({ onClose }: { onClose: () => void }) {
         <div className="w-16 h-16 rounded-2xl bg-accent mx-auto flex items-center justify-center shadow-xl mb-4">
           <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" /></svg>
         </div>
-        <h3 className="font-heading text-xl font-bold mb-1">EasyRadio</h3>
+        <h3 className="font-heading text-xl font-bold mb-1 text-text-primary">EasyRadio</h3>
         <p className="text-xs text-accent font-bold uppercase tracking-widest mb-4">Classic · Curated · Live</p>
         <p className="text-sm text-text-muted leading-relaxed mb-5">Browse thousands of live Indian radio stations. Favorites saved locally — no login needed.</p>
         <p className="text-xs text-text-dim/50 mb-1">Powered by <span className="font-bold text-accent">radio-browser.info</span></p>
-        <p className="text-[9px] text-text-dim/25 uppercase tracking-widest">Built by @owsam22 · v1.0.0</p>
+        <p className="text-[9px] text-text-dim/25 uppercase tracking-widest font-bold">Built by @owsam22 · v1.0.0</p>
       </div>
     </Modal>
   );
@@ -98,14 +98,14 @@ export default function Sidebar({
       onClick={onClick}
       className={`w-full flex items-center gap-4 px-4 py-4 rounded-2xl transition-all duration-200 ${
         active
-          ? "bg-accent/[0.08] text-accent"
-          : "text-text-muted hover:bg-black/[0.03] hover:text-text-primary"
+          ? "bg-accent/[0.08] text-accent font-bold"
+          : "text-text-muted hover:bg-black/[0.03] hover:text-text-primary font-medium"
       }`}
     >
-      <span className={`flex-shrink-0 ${active ? "text-accent" : "text-text-dim/40"}`}>{icon}</span>
-      <span className="flex-1 text-left text-[15px] font-medium">{label}</span>
+      <span className={`flex-shrink-0 transition-colors ${active ? "text-accent" : "text-text-dim/40"}`}>{icon}</span>
+      <span className="flex-1 text-left text-[15px]">{label}</span>
       {badge !== undefined && badge > 0 && (
-        <span className={`text-[10px] min-w-[20px] h-5 px-1.5 rounded-full font-bold flex items-center justify-center ${
+        <span className={`text-[10px] min-w-[20px] h-5 px-1.5 rounded-full font-bold flex items-center justify-center transition-all ${
           active ? "bg-accent/15 text-accent" : "bg-border/80 text-text-dim"
         }`}>{badge}</span>
       )}
@@ -113,7 +113,7 @@ export default function Sidebar({
   );
 
   const SectionLabel = ({ children }: { children: string }) => (
-    <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-text-dim/40 px-4 mb-1">{children}</p>
+    <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-text-dim/40 px-4 mb-1 mt-2">{children}</p>
   );
 
   return (
@@ -121,7 +121,7 @@ export default function Sidebar({
       {showSettings && <SettingsModal onClose={() => setShowSettings(false)} />}
       {showAbout && <AboutModal onClose={() => setShowAbout(false)} />}
 
-      <aside className={`${isMobile ? "flex" : "hidden lg:flex"} flex-col w-[17rem] flex-shrink-0 h-full bg-[#F9F8F6] border-r border-border/25`}>
+      <aside className={`${isMobile ? "flex" : "hidden lg:flex"} flex-col w-[17rem] flex-shrink-0 h-full bg-[#F9F8F6] border-r border-border/25 z-20`}>
 
         {/* ── Top: Logo ── */}
         <div className="flex items-center justify-between px-6 pt-8 pb-6">
@@ -137,7 +137,7 @@ export default function Sidebar({
             </div>
           </div>
           {isMobile && onClose && (
-            <button onClick={onClose} className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-text-dim hover:text-danger shadow-sm transition-colors">
+            <button onClick={onClose} className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-text-dim hover:text-danger shadow-sm transition-colors border border-border/40">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
             </button>
           )}
@@ -184,7 +184,7 @@ export default function Sidebar({
 
           <div>
             <SectionLabel>App</SectionLabel>
-            <NavItem label="Settings" icon={<svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>} active={false} onClick={() => setShowSettings(true)} />
+            <NavItem label="Settings" icon={<svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>} active={false} onClick={() => setShowSettings(true)} />
             <NavItem label="About" icon={<svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>} active={false} onClick={() => setShowAbout(true)} />
           </div>
 
@@ -203,13 +203,11 @@ export default function Sidebar({
           </div>
           <div className="flex items-center gap-2 mb-4">
             {[
-              { href: "https://github.com/owsam22", label: "GitHub", path: "M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" },
-              { href: "https://linkedin.com/in/owsam22", label: "LinkedIn", path: "M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" },
-              { href: "https://instagram.com/owsam22", label: "Instagram", path: "M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" },
+              { label: "Github", path: "M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" },
+              { label: "LinkedIn", path: "M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" },
             ].map((s) => (
-              <a key={s.label} href={s.href} target="_blank" rel="noreferrer" title={s.label}
-                className="w-9 h-9 rounded-xl bg-white border border-border/50 flex items-center justify-center text-text-dim/50 hover:text-accent hover:border-accent/30 hover:shadow-sm transition-all">
-                <svg className="w-[15px] h-[15px]" fill="currentColor" viewBox="0 0 24 24"><path d={s.path} /></svg>
+              <a key={s.label} href="#" className="w-9 h-9 rounded-xl bg-white border border-border/50 flex items-center justify-center text-text-dim hover:text-accent transition-all">
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d={s.path} /></svg>
               </a>
             ))}
           </div>
@@ -220,3 +218,5 @@ export default function Sidebar({
     </>
   );
 }
+
+
