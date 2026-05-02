@@ -1,30 +1,21 @@
 export default function SkeletonCard() {
   return (
-    <div className="bg-surface border border-border rounded-2xl p-5 space-y-4">
-      {/* Title skeleton */}
-      <div className="shimmer h-5 w-3/4 rounded-lg" />
-      {/* Tags skeleton */}
-      <div className="flex gap-2">
-        <div className="shimmer h-4 w-16 rounded-md" />
-        <div className="shimmer h-4 w-12 rounded-md" />
+    <div className="station-card" style={{ cursor: 'default' }}>
+      <div className="station-thumb" style={{ background: 'var(--bg3)', animation: 'pulse 1.5s infinite' }}></div>
+      <div className="station-info" style={{ flex: 1 }}>
+        <div style={{ height: '14px', width: '60%', background: 'var(--bg4)', borderRadius: '4px', marginBottom: '8px', animation: 'pulse 1.5s infinite' }}></div>
+        <div style={{ height: '10px', width: '40%', background: 'var(--bg3)', borderRadius: '4px', animation: 'pulse 1.5s infinite' }}></div>
       </div>
-      {/* Details skeleton */}
-      <div className="space-y-2">
-        <div className="shimmer h-3 w-1/2 rounded-md" />
-        <div className="shimmer h-3 w-2/3 rounded-md" />
-      </div>
-      {/* Bottom row */}
-      <div className="flex items-center justify-between pt-2">
-        <div className="shimmer h-4 w-20 rounded-md" />
-        <div className="shimmer h-8 w-8 rounded-full" />
+      <div className="station-right">
+        <div style={{ height: '16px', width: '24px', background: 'var(--bg3)', borderRadius: '4px', animation: 'pulse 1.5s infinite' }}></div>
       </div>
     </div>
   );
 }
 
-export function SkeletonGrid({ count = 8 }: { count?: number }) {
+export function SkeletonGrid({ count = 9 }: { count?: number }) {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+    <div className="stations-grid" style={{ overflow: 'hidden' }}>
       {Array.from({ length: count }, (_, i) => (
         <SkeletonCard key={i} />
       ))}
