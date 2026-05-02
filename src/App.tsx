@@ -100,6 +100,22 @@ export default function App() {
     addRecent(station);
   }, [player, addRecent]);
 
+  const handleNext = useCallback(() => {
+    if (!player.currentStation || stations.length === 0) return;
+    const currentIndex = stations.findIndex(s => s.stationuuid === player.currentStation?.stationuuid);
+    if (currentIndex === -1) return;
+    const nextIndex = (currentIndex + 1) % stations.length;
+    handlePlay(stations[nextIndex]);
+  }, [player.currentStation, stations, handlePlay]);
+
+  const handlePrevious = useCallback(() => {
+    if (!player.currentStation || stations.length === 0) return;
+    const currentIndex = stations.findIndex(s => s.stationuuid === player.currentStation?.stationuuid);
+    if (currentIndex === -1) return;
+    const prevIndex = (currentIndex - 1 + stations.length) % stations.length;
+    handlePlay(stations[prevIndex]);
+  }, [player.currentStation, stations, handlePlay]);
+
   const displayedStations = useMemo(() => {
     if (view === "favorites") return favorites;
     return stations;
@@ -148,7 +164,7 @@ export default function App() {
         {/* TOPBAR */}
         <div className="topbar">
           <div className="topbar-left">
-            <button className="mobile-menu-btn" id="mobileMenuBtn" onClick={() => setSidebarOpen(true)} style={{ display: 'flex' }}>
+            <button className="mobile-menu-btn" id="mobileMenuBtn" onClick={() => setSidebarOpen(true)}>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" />
               </svg>
@@ -156,7 +172,6 @@ export default function App() {
             <span className="page-title">{view === "favorites" ? "Your Favourites" : region === "indian" ? "Indian Stations" : "Global Stations"}</span>
           </div>
           <div className="topbar-right">
-             {/* Theme toggle moved to sidebar settings as requested, but keeping it here for quick access too if needed, or removing it if it clutters */}
              <button className="theme-btn" id="themeBtn" onClick={toggleTheme} title="Toggle theme">
               {theme === "dark" ? (
                 <svg id="themeIconDark" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -176,21 +191,47 @@ export default function App() {
         </div>
 
         <div className="content-area">
+          {/* MOBILE SEARCH BAR */}
+          <div className="mobile-search-area">
+             <div className="search-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+                <input 
+                  type="text" 
+                  placeholder="Search stations..." 
+                  value={searchQuery}
+                  onChange={(e) => handleSearch(e.target.value)}
+                />
+              </div>
+          </div>
+
           {/* HERO */}
           {view === "home" && !searchQuery && !activeCategory && (
             <div className="hero">
               <div className="hero-glow"></div>
               <div className="hero-glow2"></div>
-              <div className="live-badge">
-                <span className="live-dot"></span> Live Broadcasting
+              
+              {/* Retro Radio Background Image */}
+              <div style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: '45%', zIndex: 0 }}>
+                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, var(--bg2) 0%, transparent 40%)', zIndex: 1 }}></div>
+                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, var(--bg2) 0%, transparent 20%)', zIndex: 1 }}></div>
+                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, var(--bg2) 0%, transparent 20%)', zIndex: 1 }}></div>
+                <img src="https://images.unsplash.com/photo-1593697821252-0c9137d9fc45?w=800&auto=format&fit=crop&q=80" alt="Retro Radio" style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.85 }} />
               </div>
-              <h1>Stream Radio, Anywhere.</h1>
-              <p>From Bollywood hits to Berlin techno — thousands of live stations, zero interruptions.</p>
-              <div className="hero-stats">
+
+              <div style={{ position: 'relative', zIndex: 2 }}>
+                <div className="live-badge">
+                  <span className="live-dot"></span> Live Broadcasting
+                </div>
+                <h1>Stream Radio, Anywhere.</h1>
+                <p>From Bollywood hits to Berlin techno — thousands of live stations, zero interruptions.</p>
+                <div className="hero-stats">
                 <div className="stat"><span className="stat-val">12K+</span><span className="stat-lbl">Stations</span></div>
                 <div className="stat"><span className="stat-val">180+</span><span className="stat-lbl">Countries</span></div>
                 <div className="stat"><span className="stat-val">2.4M</span><span className="stat-lbl">Listeners</span></div>
                 <div className="stat"><span className="stat-val">FREE</span><span className="stat-lbl">Always</span></div>
+                  </div>
               </div>
             </div>
           )}
@@ -253,6 +294,8 @@ export default function App() {
         onStop={player.stop}
         isFavorite={player.currentStation ? isFavorite(player.currentStation.stationuuid) : false}
         onToggleFavorite={() => player.currentStation && toggleFavorite(player.currentStation)}
+        onNext={handleNext}
+        onPrevious={handlePrevious}
       />
 
       {/* MOBILE PLAYER BAR */}
@@ -301,6 +344,8 @@ export default function App() {
               onToggleFavorite={() => player.currentStation && toggleFavorite(player.currentStation)}
               mobileFullscreen
               onCollapse={() => setMobilePlayerOpen(false)}
+              onNext={handleNext}
+              onPrevious={handlePrevious}
             />
         </div>
       )}
