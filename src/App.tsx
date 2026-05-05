@@ -158,7 +158,50 @@ export default function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  
+  // KEYBOARD SHORTCUTS
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Don't trigger if user is typing in an input or textarea
+      if (
+        document.activeElement?.tagName === "INPUT" ||
+        document.activeElement?.tagName === "TEXTAREA"
+      ) {
+        return;
+      }
+
+      switch (e.key.toLowerCase()) {
+        case " ":
+          e.preventDefault(); // Prevent scrolling
+          player.togglePlayPause();
+          break;
+        case "m":
+          if (player.volume > 0) {
+            setPrevVolume(player.volume);
+            player.setVolume(0);
+          } else {
+            player.setVolume(prevVolume || 0.75);
+          }
+          break;
+        case "i":
+          if (player.currentStation) {
+            setMobilePlayerOpen(prev => !prev);
+          }
+          break;
+        case "n":
+        case "arrowright":
+          handleNext();
+          break;
+        case "p":
+        case "arrowleft":
+          handlePrevious();
+          break;
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [player, handleNext, handlePrevious, prevVolume]);
+
   return (
     <div id="body-wrapper" className={sidebarOpen ? "menu-open" : ""}>
       
