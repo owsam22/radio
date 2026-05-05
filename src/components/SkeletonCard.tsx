@@ -15,10 +15,10 @@ export default function SkeletonCard() {
 
 export function SkeletonGrid({ count = 9 }: { count?: number }) {
   return (
-    <div className="stations-grid" style={{ overflow: 'hidden' }}>
+    <>
       {Array.from({ length: count }, (_, i) => (
         <SkeletonCard key={i} />
       ))}
-    </div>
+    </>
   );
 }
