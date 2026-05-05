@@ -3,8 +3,8 @@
 A premium, seamlessly responsive web radio application offering thousands of live broadcasting stations from around the world. Designed with a retro-modern aesthetic, EasyRadio brings a top-tier listening experience directly to your browser without the need for any installations.
 
 ## 🌟 Live Preview
-[Experience EasyRadio Live](#) 
-*(Update this with your live deployment URL once published)*
+[EasyRadio](https://www.easyradio.vercel.app) 
+
 
 ## ✨ Key Features
 
@@ -14,6 +14,7 @@ A premium, seamlessly responsive web radio application offering thousands of liv
 - **Mobile-First Experience**: Enjoy a flawless listening experience on the go with a dedicated mobile mini-player and an intuitive slide-out sidebar.
 - **Zero Interruptions**: Continuous background playback while you search, browse genres, or curate your favorites.
 - **Real-Time Data**: Powered by the reliable Radio Browser API, bringing you live, accurate, and high-quality streams instantly.
+- **One-Click Sharing**: Share your favorite stations with friends and family using the built-in share feature.
 
 ## 🎧 How to Use
 
