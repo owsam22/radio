@@ -29,6 +29,10 @@ export default function App() {
   const [mobilePlayerOpen, setMobilePlayerOpen] = useState(false);
   const [region, setRegion] = useState<"indian" | "global">("indian");
   const [theme, setTheme] = useState<"dark" | "light">("light");
+  const [playbackList, setPlaybackList] = useState<Station[]>([]);
+  const [prevVolume, setPrevVolume] = useState(0.75);
+
+
 
   const player = usePlayer();
   const { favorites, isFavorite, toggleFavorite } = useFavorites();
@@ -96,26 +100,33 @@ export default function App() {
     setSidebarOpen(false);
   }, []);
 
-  const handlePlay = useCallback((station: Station) => {
+  const handlePlay = useCallback((station: Station, list?: Station[]) => {
     player.playStation(station);
     addRecent(station);
-  }, [player, addRecent]);
+    if (list) {
+      setPlaybackList(list);
+    } else if (playbackList.length === 0) {
+      setPlaybackList([station]);
+    }
+  }, [player, addRecent, playbackList.length]);
 
   const handleNext = useCallback(() => {
-    if (!player.currentStation || stations.length === 0) return;
-    const currentIndex = stations.findIndex(s => s.stationuuid === player.currentStation?.stationuuid);
+    const list = playbackList.length > 0 ? playbackList : stations;
+    if (!player.currentStation || list.length === 0) return;
+    const currentIndex = list.findIndex(s => s.stationuuid === player.currentStation?.stationuuid);
     if (currentIndex === -1) return;
-    const nextIndex = (currentIndex + 1) % stations.length;
-    handlePlay(stations[nextIndex]);
-  }, [player.currentStation, stations, handlePlay]);
+    const nextIndex = (currentIndex + 1) % list.length;
+    handlePlay(list[nextIndex], list);
+  }, [player.currentStation, playbackList, stations, handlePlay]);
 
   const handlePrevious = useCallback(() => {
-    if (!player.currentStation || stations.length === 0) return;
-    const currentIndex = stations.findIndex(s => s.stationuuid === player.currentStation?.stationuuid);
+    const list = playbackList.length > 0 ? playbackList : stations;
+    if (!player.currentStation || list.length === 0) return;
+    const currentIndex = list.findIndex(s => s.stationuuid === player.currentStation?.stationuuid);
     if (currentIndex === -1) return;
-    const prevIndex = (currentIndex - 1 + stations.length) % stations.length;
-    handlePlay(stations[prevIndex]);
-  }, [player.currentStation, stations, handlePlay]);
+    const prevIndex = (currentIndex - 1 + list.length) % list.length;
+    handlePlay(list[prevIndex], list);
+  }, [player.currentStation, playbackList, stations, handlePlay]);
 
   const displayedStations = useMemo(() => {
     if (view === "favorites") return favorites;
@@ -147,6 +158,7 @@ export default function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  
   return (
     <div id="body-wrapper" className={sidebarOpen ? "menu-open" : ""}>
       
@@ -288,7 +300,7 @@ export default function App() {
                     station={station}
                     isPlaying={player.currentStation?.stationuuid === station.stationuuid && player.isPlaying}
                     isFavorite={isFavorite(station.stationuuid)}
-                    onPlay={handlePlay}
+                    onPlay={(s) => handlePlay(s, displayedStations)}
                     onToggleFavorite={toggleFavorite}
                   />
                 ))
